@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Analysis Tool</h1>
+    
+    <form method="POST" enctype="multipart/form-data">
+        <label for="file">Upload your CSV file:</label>
+        <input type="file" name="file" id="file">
+        <button type="submit">Upload and Analyze</button>
+    </form>
+
+    {% if error_message %}
+        <p class="error">{{ error_message }}</p>
+    {% endif %}
+
+    {% if uploaded_filename %}
+        <p class="success">File '{{ uploaded_filename }}' uploaded successfully.</p>
+    {% endif %}
+
+    {% if analysis_result %}
+        <h2>Analysis Result:</h2>
+        <h3>Columns:</h3>
+        <ul>
+            {% for column in analysis_result.columns %}
+                <li>{{ column }}</li>
+            {% endfor %}
+        </ul>
+        
+        <h3>Preview:</h3>
+        <table border="1" cellspacing="0" cellpadding="5">
+            <thead>
+                <tr>
+                    {% for col in analysis_result.preview[0].keys() %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in analysis_result.preview %}
+                    <tr>
+                        {% for cell in row.values() %}
+                            <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</body>
+</html>
