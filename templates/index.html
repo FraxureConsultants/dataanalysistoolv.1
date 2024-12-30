@@ -76,5 +76,46 @@
             </tbody>
         </table>
     {% endif %}
+
+    <!-- Visualization Form -->
+    {% if analysis_result %}
+        <h3>Generate Visualization:</h3>
+        <form action="/" method="post">
+            <label for="x_column">Select X-axis column:</label>
+            <select name="x_column" id="x_column">
+                {% for col in analysis_result.columns %}
+                    <option value="{{ col }}">{{ col }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <label for="y_column">Select Y-axis column:</label>
+            <select name="y_column" id="y_column">
+                {% for col in analysis_result.columns %}
+                    <option value="{{ col }}">{{ col }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <label for="chart_type">Select Chart Type:</label>
+            <select name="chart_type" id="chart_type">
+                <option value="bar">Bar Chart</option>
+                <option value="line">Line Chart</option>
+                <option value="pie">Pie Chart</option>
+            </select>
+            <br>
+            <label for="chart_color">Chart Color:</label>
+            <input type="text" name="chart_color" id="chart_color" placeholder="Enter a color (e.g., blue)">
+            <br>
+            <input type="checkbox" name="show_percentage" id="show_percentage">
+            <label for="show_percentage">Show Percentage</label>
+            <br>
+            <button type="submit" name="visualize">Generate Visualization</button>
+        </form>
+    {% endif %}
+
+    <!-- Display Visualization -->
+    {% if visualization_image %}
+        <h3>Visualization:</h3>
+        <img src="data:image/png;base64,{{ visualization_image }}" alt="Visualization" style="max-width: 100%;">
+    {% endif %}
 </body>
 </html>
