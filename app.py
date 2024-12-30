@@ -14,6 +14,7 @@ def index():
     analysis_result = None
     error_message = None
     uploaded_filename = None
+    summary_statistics = None
 
     if request.method == "POST":
         if "file" in request.files:
@@ -43,11 +44,19 @@ def index():
                     else:
                         raise ValueError("Unsupported file format. Please upload a .csv or .xlsx file.")
 
-                    # Process file
+                    # Process file for column names and preview
                     analysis_result = {
                         "columns": df.columns.tolist(),
                         "preview": df.head().to_dict(orient="records"),
                     }
+
+                    # Calculate summary statistics for numerical columns
+                    summary_stats = df.describe().transpose().to_dict(orient="index")
+                    summary_statistics = {
+                        col: {stat: round(value, 2) for stat, value in stats.items()}
+                        for col, stats in summary_stats.items()
+                    }
+
                 except Exception as e:
                     error_message = f"Error analyzing file: {str(e)}"
 
@@ -56,6 +65,7 @@ def index():
         analysis_result=analysis_result,
         error_message=error_message,
         uploaded_filename=uploaded_filename,
+        summary_statistics=summary_statistics,
     )
 
 if __name__ == "__main__":

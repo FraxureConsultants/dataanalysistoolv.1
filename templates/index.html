@@ -4,50 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Analysis Tool</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .error {
-            color: red;
-        }
-        .success {
-            color: green;
-        }
-    </style>
 </head>
 <body>
     <h1>Data Analysis Tool</h1>
-    
-    <form method="POST" enctype="multipart/form-data">
-        <label for="file">Upload your CSV file:</label>
+
+    <!-- File Upload Form -->
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label for="file">Upload your CSV or Excel file:</label>
         <input type="file" name="file" id="file">
         <button type="submit">Upload and Analyze</button>
     </form>
 
+    <!-- Display Error Messages -->
     {% if error_message %}
-        <p class="error">{{ error_message }}</p>
+        <p style="color: red;">{{ error_message }}</p>
     {% endif %}
 
+    <!-- Display Uploaded Filename -->
     {% if uploaded_filename %}
-        <p class="success">File '{{ uploaded_filename }}' uploaded successfully.</p>
+        <p style="color: green;">File '{{ uploaded_filename }}' uploaded successfully.</p>
     {% endif %}
 
+    <!-- Display Analysis Results -->
     {% if analysis_result %}
-        <h2>Analysis Result:</h2>
-        <h3>Columns:</h3>
-        <ul>
-            {% for column in analysis_result.columns %}
-                <li>{{ column }}</li>
-            {% endfor %}
-        </ul>
-        
-        <h3>Preview:</h3>
-        <table border="1" cellspacing="0" cellpadding="5">
+        <h3>Analysis Result:</h3>
+        <p><strong>Columns:</strong> {{ analysis_result.columns | join(", ") }}</p>
+
+        <h3>Data Preview:</h3>
+        <table border="1">
             <thead>
                 <tr>
-                    {% for col in analysis_result.preview[0].keys() %}
+                    {% for col in analysis_result.columns %}
                         <th>{{ col }}</th>
                     {% endfor %}
                 </tr>
@@ -55,8 +42,34 @@
             <tbody>
                 {% for row in analysis_result.preview %}
                     <tr>
-                        {% for cell in row.values() %}
-                            <td>{{ cell }}</td>
+                        {% for col in analysis_result.columns %}
+                            <td>{{ row[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <!-- Display Summary Statistics -->
+    {% if summary_statistics %}
+        <h3>Summary Statistics:</h3>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    {% for col in summary_statistics.keys() %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% set metrics = ['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max'] %}
+                {% for metric in metrics %}
+                    <tr>
+                        <td>{{ metric }}</td>
+                        {% for col, stats in summary_statistics.items() %}
+                            <td>{{ stats.get(metric, 'N/A') }}</td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
